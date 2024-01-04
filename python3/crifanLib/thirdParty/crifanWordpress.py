@@ -38,7 +38,7 @@ class crifanWordpress(object):
     # Class Method
     ################################################################################
 
-    def __init__(self, host, jwtToken=None, requestsProxies=None):
+    def __init__(self, host, jwtToken=None, username=None, password=None, requestsProxies=None):
         self.host = host # 'https://www.crifan.org'
         self.authorization = f"Bearer {jwtToken}" if jwtToken is not None else None
         self.requestsProxies = requestsProxies # {'http': 'http://127.0.0.1:58591', 'https': 'http://127.0.0.1:58591'}
@@ -57,6 +57,8 @@ class crifanWordpress(object):
 
         # requests.adapters.DEFAULT_RETRIES = 10
         self.reqSession = requests.Session()
+        if (username is not None) and (password is not None):
+            self.reqSession.auth = (username, password)
         self.reqRetry = Retry(connect=self.MaxRetryNum, backoff_factor=0.5)
         self.reqAdapter = HTTPAdapter(max_retries=self.reqRetry)
         self.reqSession.mount('http://', self.reqAdapter)
