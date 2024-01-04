@@ -38,9 +38,9 @@ class crifanWordpress(object):
     # Class Method
     ################################################################################
 
-    def __init__(self, host, jwtToken, requestsProxies=None):
+    def __init__(self, host, jwtToken=None, requestsProxies=None):
         self.host = host # 'https://www.crifan.org'
-        self.authorization = f"Bearer {jwtToken}"
+        self.authorization = f"Bearer {jwtToken}" if jwtToken is not None else None
         self.requestsProxies = requestsProxies # {'http': 'http://127.0.0.1:58591', 'https': 'http://127.0.0.1:58591'}
 
         # "https://www.crifan.org/wp-json/jwt-auth/v1/token/validate"
@@ -62,6 +62,10 @@ class crifanWordpress(object):
         self.reqSession.mount('http://', self.reqAdapter)
         self.reqSession.mount('https://', self.reqAdapter)
 
+    def headersAddAuthorization(self, headers):
+        if self.authorization is not None:
+            headers['authorization'] = self.authorization
+
     def validateToken(self):
         """Validate wordpress REST api jwt token is valid or not
         Args:
@@ -70,9 +74,9 @@ class crifanWordpress(object):
         Raises:
         """
         curHeaders = {
-            "Authorization": self.authorization,
             "Accept": "application/json",
         }
+        self.headersAddAuthorization(curHeaders)
         validateTokenUrl = self.apiValidateToken
         # resp = requests.post(
         resp = self.reqSession.post(
@@ -120,11 +124,11 @@ class crifanWordpress(object):
         Raises:
         """
         curHeaders = {
-            "Authorization": self.authorization,
             "Content-Type": contentType,
             "Accept": "application/json",
             'Content-Disposition': f'attachment; filename={filename}',
         }
+        self.headersAddAuthorization(curHeaders)
         logging.debug("curHeaders=%s", curHeaders)
         # curHeaders={'Authorization': 'Bearer eyJ0xxxyyy.zzzB4', 'Content-Type': 'image/png', 'Content-Disposition': 'attachment; filename=f6956c30ef0b475fa2b99c2f49622e35.png'}
         createMediaUrl = self.apiMedia
@@ -170,10 +174,10 @@ class crifanWordpress(object):
         Raises:
         """
         curHeaders = {
-            "Authorization": self.authorization,
             "Content-Type": "application/json",
             "Accept": "application/json",
         }
+        self.headersAddAuthorization(curHeaders)
         logging.debug("curHeaders=%s", curHeaders)
 
         categoryIdList = []
@@ -236,10 +240,10 @@ class crifanWordpress(object):
         Raises:
         """
         curHeaders = {
-            "Authorization": self.authorization,
             "Content-Type": "application/json",
             "Accept": "application/json",
         }
+        self.headersAddAuthorization(curHeaders)
         logging.debug("curHeaders=%s", curHeaders)
         # curHeaders={'Authorization': 'Bearer eyxxx9.eyxxxfQ.5Ixxxm-6Yxxxs', 'Content-Type': 'application/json', 'Accept': 'application/json'}
 
@@ -301,9 +305,9 @@ class crifanWordpress(object):
         Raises:
         """
         curHeaders = {
-            "Authorization": self.authorization,
             "Accept": "application/json",
         }
+        self.headersAddAuthorization(curHeaders)
         logging.debug("curHeaders=%s", curHeaders)
 
         if perPage is None:
