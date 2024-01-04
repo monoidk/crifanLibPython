@@ -40,7 +40,7 @@ class crifanWordpress(object):
 
     def __init__(self, host, jwtToken, requestsProxies=None):
         self.host = host # 'https://www.crifan.org'
-        self.authorization = "Bearer %s" % jwtToken # 'Bearer xxx'
+        self.authorization = f"Bearer {jwtToken}"
         self.requestsProxies = requestsProxies # {'http': 'http://127.0.0.1:58591', 'https': 'http://127.0.0.1:58591'}
 
         # "https://www.crifan.org/wp-json/jwt-auth/v1/token/validate"
@@ -101,7 +101,7 @@ class crifanWordpress(object):
         """
         curDatetime = datetime.now() # datetime.datetime(2021, 3, 25, 22, 42, 7, 834462)
         yearMonthStr = curDatetime.strftime(format="%Y/%m") # '2021/03'
-        uploadedImageUrl = "%s/files/pic/uploads/%s/%s" % (self.host, yearMonthStr, uploadImageFilename)
+        uploadedImageUrl = f"{self.host}/files/pic/uploads/{yearMonthStr}/{uploadImageFilename}"
         # 'https://www.crifan.org/files/pic/uploads/2021/03/f60ea32cf4664b41922431f4ea015621.jpg'
         return uploadedImageUrl
 
@@ -123,7 +123,7 @@ class crifanWordpress(object):
             "Authorization": self.authorization,
             "Content-Type": contentType,
             "Accept": "application/json",
-            'Content-Disposition': 'attachment; filename=%s' % filename,
+            'Content-Disposition': f'attachment; filename={filename}',
         }
         logging.debug("curHeaders=%s", curHeaders)
         # curHeaders={'Authorization': 'Bearer eyJ0xxxyyy.zzzB4', 'Content-Type': 'image/png', 'Content-Disposition': 'attachment; filename=f6956c30ef0b475fa2b99c2f49622e35.png'}
@@ -495,14 +495,14 @@ class crifanWordpress(object):
         # 'xiaomi sport uses sets mi band 4'
         removeWordList = ["to", "the", "a", "are", "is", "and", "of", "in", "at"]
         for eachWord in removeWordList:
-            removeInsideP = "\s+%s\s+" % eachWord # '\\s+to\\s+'
+            removeInsideP = f"\s+{eachWord}\s+" # '\\s+to\\s+'
             slug = re.sub(removeInsideP, " ", slug, flags=re.I)
             # special: 'the road of water suzhou qingyuan huayan water concerns public number binding door number'
-            removeStartP = "^%s\s+" % eachWord
+            removeStartP = f"^{eachWord}\s+"
             slug = re.sub(removeStartP, "", slug, flags=re.I)
             # Error: slug: Account registration and login in the Android APP of Bank of China -> account_registration_login_in_android_app_bank_chin
-            # removeEndP = "%s$" % eachWord
-            removeEndP = "\s+%s$" % eachWord
+            # removeEndP = f"{eachWord}$"
+            removeEndP = f"\s+{eachWord}$"
             # 'Account registration and login in the Android APP of Bank of China' -> 'account registration login android app bank china'
             slug = re.sub(removeEndP, "", slug, flags=re.I)
 
